@@ -230,14 +230,14 @@
             
             let userPin = pinInput.value;
 
-            // 1. Shartni tekshirish (Faqatgina 4 ta raqam bo'lishi shart, aldasa o'tmaydi)
+            // 1. Shartni tekshirish
             if (userPin.length !== 4 || isNaN(userPin)) {
                 errorMsg.style.display = 'block';
                 pinInput.style.borderColor = '#ff5252';
                 return;
             }
 
-            // Xatolik xabarini yopish va elementlarni sozlash
+            // Elementlarni sozlash
             errorMsg.style.display = 'none';
             pinInput.style.borderColor = '#333';
             pinInput.disabled = true;
@@ -252,29 +252,21 @@
             let currentCheck = 0;
             let targetPin = parseInt(userPin, 10);
 
-            // Tezlikni sozlash (1 daqiqadan kamroq vaqt ichida yetib borishi uchun)
-            // Har 1 millisekundda bitta kombinatsiya tekshiriladi
+            // Simulyatsiya tsikli
             simulationInterval = setInterval(() => {
-                // Raqamni 4 xonali ko'rinishga keltirish (masalan: 5 -> "0005")
                 let formattedCombo = currentCheck.toString().padStart(4, '0');
                 
-                // Ekrandagi raqamni yangilash
                 liveCombo.innerText = formattedCombo;
-                
-                // Tarixga qo'shish
                 triedCombinations.push(formattedCombo);
 
-                // Agar kod to'g'ri kelsa (100% moslik)
+                // Aynan kiritilgan kodga yetganda to'xtash
                 if (currentCheck === targetPin) {
                     clearInterval(simulationInterval);
                     
-                    // Effektlarni ishga tushirish
-                    document.body.classList.add('success'); // Yashil fon
-                    successBox.style.style = 'block';
+                    document.body.classList.add('success'); 
                     successBox.style.display = 'block';
-                    historyBtn.style.display = 'block'; // Tarix tugmasini ko'rsatish
+                    historyBtn.style.display = 'block'; 
                     
-                    // Tarix ro'yxatini shakllantirish
                     renderHistory();
                 }
 
@@ -282,7 +274,6 @@
             }, 1); 
         }
 
-        // Tarix ro'yxatini modal ichiga yozish
         function renderHistory() {
             const historyList = document.getElementById('historyList');
             historyList.innerHTML = '';
@@ -295,7 +286,6 @@
             });
         }
 
-        // Modal oynani ochish/yopish
         function toggleModal(show) {
             const modal = document.getElementById('historyModal');
             modal.style.display = show ? 'flex' : 'none';
