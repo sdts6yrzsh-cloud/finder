@@ -3,7 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIN Code Simulator</title>
+    <title>Aloqa Portali</title>
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          // Akkauntingizdan olingan haqiqiy Public Key avtomat joylashtirildi
+          emailjs.init("H1luAASSU7byhrhMr"); 
+       })();
+    </script>
+
     <style>
         * {
             box-sizing: border-box;
@@ -19,13 +28,6 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            transition: background 0.8s ease;
-            overflow: hidden;
-        }
-
-        /* Yashil fon effekti */
-        body.success {
-            background-color: #112d1b;
         }
 
         .container {
@@ -36,31 +38,39 @@
             width: 90%;
             max-width: 450px;
             text-align: center;
-            position: relative;
         }
 
         h2 {
             margin-bottom: 20px;
             font-size: 22px;
-            color: #e0e0e0;
+            color: #00adb5;
         }
 
-        input {
+        .input-group {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        input, textarea {
             width: 100%;
             padding: 12px;
             border: 2px solid #333;
             border-radius: 6px;
             background: #2a2a2a;
             color: #fff;
-            font-size: 20px;
-            text-align: center;
-            letter-spacing: 5px;
-            margin-bottom: 15px;
+            font-size: 16px;
             outline: none;
             transition: border-color 0.3s;
         }
 
-        input:focus {
+        input:focus, textarea:focus {
             border-color: #00adb5;
         }
 
@@ -75,6 +85,7 @@
             font-weight: bold;
             cursor: pointer;
             transition: background 0.3s;
+            margin-top: 10px;
         }
 
         button:hover {
@@ -86,210 +97,79 @@
             cursor: not-allowed;
         }
 
-        .error-msg {
-            color: #ff5252;
-            margin-bottom: 15px;
-            font-size: 14px;
-            display: none;
-        }
-
-        /* Brute-force vizual qismi */
-        .simulation-box {
-            display: none;
-            margin-top: 20px;
-        }
-
-        .current-combo {
-            font-size: 48px;
-            font-family: monospace;
-            color: #00adb5;
-            letter-spacing: 8px;
-            margin: 15px 0;
-        }
-
-        .success-box {
-            display: none;
-            color: #39ea7c;
-            font-size: 24px;
-            font-weight: bold;
+        .status-msg {
             margin-top: 15px;
-            animation: pulse 1s infinite alternate;
-        }
-
-        /* Tepada o'ng burchakdagi tugma */
-        .history-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #333;
-            color: #ccc;
-            border: 1px solid #444;
-            padding: 5px 10px;
-            font-size: 11px;
-            border-radius: 4px;
-            width: auto;
-            display: none;
-        }
-
-        .history-btn:hover {
-            background: #444;
-        }
-
-        /* Kombinatsiyalar ro'yxati (Modal oyna) */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-        }
-
-        .modal-content {
-            background: #222;
-            padding: 20px;
-            border-radius: 10px;
-            width: 85%;
-            max-width: 350px;
-            max-height: 70vh;
-            overflow-y: auto;
-            text-align: left;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 10px;
-        }
-
-        .close-btn {
-            cursor: pointer;
-            color: #ff5252;
+            font-size: 14px;
             font-weight: bold;
-        }
-
-        .combo-item {
-            font-family: monospace;
-            padding: 4px 0;
-            border-bottom: 1px solid #2a2a2a;
-            color: #aaa;
-        }
-
-        @keyframes pulse {
-            from { transform: scale(1); }
-            to { transform: scale(1.05); }
+            display: none;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <button class="history-btn" id="historyBtn" onclick="toggleModal(true)">Kombinatsiyalar ketma-ketligi</button>
-
-        <h2>Telefoningizning 4 xonali kodini kiriting:</h2>
+        <h2>Biz bilan bog'lanish</h2>
+        <p style="color: #888; font-size: 14px; margin-bottom: 20px;">Fikringiz yoki taklifingizni qoldiring:</p>
         
-        <input type="password" id="pinInput" maxlength="4" placeholder="••••" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-        <div class="error-msg" id="errorMsg">Xato! Iltimos, haqiqiy 4 xonali raqamli kodni kiriting.</div>
-        
-        <button id="startBtn" onclick="startSimulation()">Kod qidirishni boshlash</button>
-
-        <div class="simulation-box" id="simBox">
-            <p style="color: #888;">Kombinatsiyalar tekshirilmoqda...</p>
-            <div class="current-combo" id="liveCombo">0000</div>
-        </div>
-
-        <div class="success-box" id="successBox">100% MOS KELDI! TOPILDI!</div>
-    </div>
-
-    <div class="modal" id="historyModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Ishlatilgan kombinatsiyalar</h3>
-                <span class="close-btn" onclick="toggleModal(false)">X</span>
+        <form id="contactForm">
+            <div class="input-group">
+                <label>Ismingiz:</label>
+                <input type="text" id="userName" required placeholder="Masalan: Alisher">
             </div>
-            <div id="historyList"></div>
-        </div>
+
+            <div class="input-group">
+                <label>Email manzilingiz:</label>
+                <input type="email" id="userEmail" required placeholder="example@mail.com">
+            </div>
+
+            <div class="input-group">
+                <label>Xabaringiz:</label>
+                <textarea id="userMessage" rows="4" required placeholder="Xabarni shu yerga yozing..."></textarea>
+            </div>
+            
+            <button type="submit" id="sendBtn">Xabarni yuborish</button>
+        </form>
+
+        <div class="status-msg" id="statusMsg"></div>
     </div>
 
     <script>
-        let triedCombinations = [];
-        let simulationInterval;
-
-        function startSimulation() {
-            const pinInput = document.getElementById('pinInput');
-            const errorMsg = document.getElementById('errorMsg');
-            const startBtn = document.getElementById('startBtn');
-            const simBox = document.getElementById('simBox');
-            const liveCombo = document.getElementById('liveCombo');
-            const successBox = document.getElementById('successBox');
-            const historyBtn = document.getElementById('historyBtn');
+        document.getElementById('contactForm').addEventListener('submit', function(event) {
+            event.preventDefault();
             
-            let userPin = pinInput.value;
-
-            // 1. Shartni tekshirish
-            if (userPin.length !== 4 || isNaN(userPin)) {
-                errorMsg.style.display = 'block';
-                pinInput.style.borderColor = '#ff5252';
-                return;
-            }
-
-            // Elementlarni sozlash
-            errorMsg.style.display = 'none';
-            pinInput.style.borderColor = '#333';
-            pinInput.disabled = true;
-            startBtn.disabled = true;
-            simBox.style.display = 'block';
-            successBox.style.display = 'none';
-            historyBtn.style.display = 'none';
-            document.body.classList.remove('success');
-
-            // Ma'lumotlarni tozalash
-            triedCombinations = [];
-            let currentCheck = 0;
-            let targetPin = parseInt(userPin, 10);
-
-            // Simulyatsiya tsikli
-            simulationInterval = setInterval(() => {
-                let formattedCombo = currentCheck.toString().padStart(4, '0');
-                
-                liveCombo.innerText = formattedCombo;
-                triedCombinations.push(formattedCombo);
-
-                // Aynan kiritilgan kodga yetganda to'xtash
-                if (currentCheck === targetPin) {
-                    clearInterval(simulationInterval);
-                    
-                    document.body.classList.add('success'); 
-                    successBox.style.display = 'block';
-                    historyBtn.style.display = 'block'; 
-                    
-                    renderHistory();
-                }
-
-                currentCheck++;
-            }, 1); 
-        }
-
-        function renderHistory() {
-            const historyList = document.getElementById('historyList');
-            historyList.innerHTML = '';
+            const sendBtn = document.getElementById('sendBtn');
+            const statusMsg = document.getElementById('statusMsg');
             
-            triedCombinations.forEach((combo, index) => {
-                let div = document.createElement('div');
-                div.className = 'combo-item';
-                div.innerText = `${index + 1}-urinish: ${combo}`;
-                historyList.appendChild(div);
-            });
-        }
+            sendBtn.disabled = true;
+            sendBtn.innerText = "Yuborilmoqda...";
+            statusMsg.style.display = 'none';
 
-        function toggleModal(show) {
-            const modal = document.getElementById('historyModal');
-            modal.style.display = show ? 'flex' : 'none';
-        }
+            // EmailJS shablonidagi o'zgaruvchilar bilan bog'lash
+            let templateParams = {
+                name: document.getElementById('userName').value,
+                email: document.getElementById('userEmail').value,
+                title: "Veb-saytdan yangi xabar",
+                message: document.getElementById('userMessage').value
+            };
+
+            // EmailJS orqali yuborish
+            // DIQQAT: 'YOUR_TEMPLATE_ID' o'rniga o'zingiz yaratgan andoza kodini qo'ying
+            emailjs.send('service_8u5qqkm', 'YOUR_TEMPLATE_ID', templateParams)
+                .then(function(response) {
+                    statusMsg.style.display = 'block';
+                    statusMsg.style.color = '#39ea7c';
+                    statusMsg.innerText = "✓ Xabaringiz muvaffaqiyatli yuborildi!";
+                    sendBtn.innerText = "Xabarni yuborish";
+                    sendBtn.disabled = false;
+                    document.getElementById('contactForm').reset();
+                }, function(error) {
+                    statusMsg.style.display = 'block';
+                    statusMsg.style.color = '#ff5252';
+                    statusMsg.innerText = "✕ Tizimda xatolik yuz berdi. Qayta urining.";
+                    sendBtn.innerText = "Xabarni yuborish";
+                    sendBtn.disabled = false;
+                });
+        });
     </script>
 </body>
 </html>
